@@ -86,4 +86,3 @@ def splitData():
     f.close()
 
 
-splitData()
