@@ -48,5 +48,37 @@ class NB:
         
         OverallFile.close()
 
-        print(customDict.__len__())
+        # TESTING FILES
+        file = open(os.getcwd() + "\\Raw data processing\\aclImdb\\test\\neg\\4_4.txt", "r")
+
+        review = file.read()
+        reviewList = review.split()
+        review = {}
+        # Initiate the dictionary containing the vector
+        for i in reviewList:
+            review[i] = 0
+        # Specifying which words the review contains (0 or 1 in the vector attributes)
+        for item in review.keys():
+            review[item] = item in customDict
+        
+        # NEGATIVE
+        negProdResult = 1
+        for item in review.items():
+            if item[1] == 1:
+                negProdResult *= self.negativeWordsProbs[item[0]]
+                print(negProdResult)
+
+        negProdResult *= self.probNeg
+        
+
+        # POSITIVE
+        posProdResult = 1
+        for item in review.items():
+            if item[1] == 1:
+                posProdResult *= self.positiveWordsProbs[item[0]]
+                print(posProdResult)
+
+        posProdResult *= self.probPos
+        
+        print( posProdResult > negProdResult)
 
