@@ -6,7 +6,7 @@ naiveB.train()
 print("-----------------")
 #naiveB.predict(500, 50, 9000)
 xTest, yTest = naiveB.loadTestData()
-predicted = naiveB.predict(xTest=xTest, m=9000, n=50, k=9000)
+predicted = naiveB.predict(xTest=xTest, m=500, n=50, k=9000)
 
 print("-----------------")
 

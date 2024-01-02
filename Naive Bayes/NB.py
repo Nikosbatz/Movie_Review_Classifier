@@ -1,4 +1,4 @@
-from  osDir import splitData
+
 import os
 
 
