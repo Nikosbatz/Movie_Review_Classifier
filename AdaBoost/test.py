@@ -42,7 +42,7 @@ class AdaBoost:
 
 
 class DecisionStump:
-    def __init__(self, vocab):
+    def __init__(self):
         self.feature_index = None
         self.threshold = None
         self.prediction = None

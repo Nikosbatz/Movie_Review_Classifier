@@ -19,3 +19,20 @@ def createVocabulary(m, n, k):
             
     OverallFile.close()
     return vocabulary
+
+
+def createVector(x, vocab):
+    xVector = []
+    keys = list(vocab.keys())
+    for review in x: 
+        reviewVector = [0]*len(vocab)
+        print(len(reviewVector))
+        review = review.split()
+        
+        for word in review:
+            if vocab.get(word) == 0:
+                reviewVector[keys.index(word)] = 1
+
+        xVector.append(reviewVector)
+
+    return xVector
