@@ -4,7 +4,7 @@ import os
 """"import sys
 import os
 sys.path.append(os.getcwd() + "\\Raw data processing")
-from createVocabulary import createVocabulary
+from createVocabulary import *
 """
 #-----------
 
@@ -26,7 +26,6 @@ def createVector(x, vocab):
     keys = list(vocab.keys())
     for review in x: 
         reviewVector = [0]*len(vocab)
-        print(len(reviewVector))
         review = review.split()
         
         for word in review:

@@ -1,6 +1,7 @@
 
 
-d = {"asd":1, "a":5, "lll":4}
 
-keys = list(d.keys())
-print(keys.index("asd"))
+
+x = [0,1,2,3,4]
+
+x /= 5

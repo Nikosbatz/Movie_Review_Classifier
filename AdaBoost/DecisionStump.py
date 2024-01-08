@@ -13,21 +13,14 @@ class DecisionStump:
     
     def __init__(self):
         self.feature_index = 0
-        
-              
-        
 
-    def fit(self, xTrain, yTrain):
-        count = 0
-        lines = len(xTrain)
-        weights = np.ones(lines) / lines
+              
+    def fit(self, xTrain, yTrain, sampleWeights):
         columns = len(xTrain[0])
         minError = 1
         # iterate over every feature of the xTrain list
         for feature_index in range(columns):
-            count +=1
-            #print(count)
-            
+                    
             # features are binary values
             
             predictions = list()
@@ -42,7 +35,7 @@ class DecisionStump:
             error = 0
             for i in range(len(predictions)):
                 if predictions[i] != yTrain[i]:
-                    error += weights[i] 
+                    error += sampleWeights[i] 
 
             # save the values of the stump with minimum error so far.
             if error < minError:
@@ -59,11 +52,11 @@ class DecisionStump:
         return results
 
 
-x, y = loadTrainData()
+"""x, y = loadTrainData()
 
 
 
-vocab = createVocabulary(100, 100, 10000)
+vocab = createVocabulary(100, 300, 10000)
 
 xVector = createVector(x, vocab)
 
@@ -77,5 +70,5 @@ print(d.feature_index)
 
 
 accuracy = accuracy_score(y, d.predict(xVector))
-print(accuracy)
+print(accuracy)"""
 
