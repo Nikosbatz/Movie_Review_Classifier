@@ -11,7 +11,7 @@ from createVocabulary import *
 def createVocabulary(m, n, k):
 
     vocabulary = {}
-    OverallFile = open(os.getcwd() + "\\Raw data processing\\OverallFreq.txt", "r", errors="ignore")
+    OverallFile = open(os.getcwd() + "\\Raw data processing\\OverallFreq.txt", "r", errors="ignore") 
     lines =  OverallFile.readlines()
     lines = (lines[n:-k])[:m]
     for i in lines:

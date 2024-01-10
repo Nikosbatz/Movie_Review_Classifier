@@ -1,4 +1,5 @@
 from DecisionStump import *
+
 from math import log2
 # importing custom functions.
 #--------
@@ -23,8 +24,8 @@ class AdaBoost:
 
     def fit(self, xTrain, yTrain):
         
-        self.vocabulary = createVocabulary(self.m, self.n, self.k)
-        xVector = createVector(xTrain, self.vocabulary)
+        self.vocab = createVocabulary(self.m, self.n, self.k)
+        xVector = createVector(xTrain, self.vocab)
         
         xTrainLen = len(xTrain)
         weights = []
@@ -34,35 +35,48 @@ class AdaBoost:
         count = 0
         for i in range(self.estimators):
             count += 1
-            print(count)
+            print(count, "------")
 
             stump = DecisionStump()
-            # BGAZEI SYNEXEIA TO IDIO FEATURE KATI THELEI DIORTHWSH APO TO DECISIONSTUMP
+            
             stump.fit(xVector, yTrain, weights)
             print(stump.feature_index)
             
             self.stumps.append(stump)
+            #print(self.vocab[stump.feature_index])
+            predictions = stump.predict(xVector)
             
-            predictions = self.stumps[i].predict(xTrain)
 
+            count1 = 0
             error = 0
             for k in range (xTrainLen):
-
-                error += weights[k] if predictions[k] != yTrain[k] else 0
+                if predictions[k] != yTrain[k]:
+                    count1 += 1
+                    error += weights[k]
+                #error += weights[k] if predictions[k] != yTrain[k] else 0
                 
             
+            print("Weighted error: ",error)
             if error >= 0.5 :
                 
                 print("ERROR >= 0.5")
                 print(error)
                 break
-
+            
             for k in range(xTrainLen):
-                weights[k] *= error/(1-error) if predictions == yTrain[k] else 1
-
+                if predictions[k] == yTrain[k]:
+                    weights[k] *= error/(1-error)
+                else:
+                    None
+                #weights[k] *= error/(1-error) if predictions[k] == yTrain[k] else 1
+                
+            
             for k in range(len(weights)):
+                
                 weights[k] = weights[k] / sum(weights)
             
+            
+             
             self.stumpWeights.append( 1/2 * log2((1-error) / error ))
 
             
@@ -72,16 +86,16 @@ class AdaBoost:
     def predict(self, xTest):
         
         # Converts reviews in binary vectors
-        xTest = createVector(xTest, self.vocabulary)
-
+        xVector = createVector(xTest, self.vocab)
+        
         # Intialize final predictions list
         y = list()
+        ls = []
 
         count = 0
         # Iterates over each item of the input given
-        for review in xTest:
-            count += 1
-            print(count)
+        for review in xVector:
+            
             sum_pos = 0
             sum_neg = 0
 
@@ -89,13 +103,13 @@ class AdaBoost:
             for i in range(self.estimators):
 
                 prediction = self.stumps[i].predict(review)
-
                 # Calculates the review's sum based on stump weights
                 if prediction == 1:
                     sum_pos += self.stumpWeights[i]
                 else:
                     sum_neg += self.stumpWeights[i]
 
+            
             y.append(1 if sum_pos>sum_neg else 0)
         
         return y
@@ -103,13 +117,18 @@ class AdaBoost:
 
 xTrain, yTrain = loadTrainData()
 
-a = AdaBoost(20, 200, 10, 1000)
+a = AdaBoost(50, 1000, 200, 1000)
 
 a.fit(xTrain, yTrain)
+print(a.stumpWeights)
 
 from sklearn.metrics import accuracy_score
+from sklearn.metrics import classification_report
 
-accuracy = accuracy_score(yTrain, a.predict(xTrain))
-print(accuracy)
+
+r = classification_report(yTrain, a.predict(xTrain))
+print(r)
+"""accuracy = accuracy_score(yTrain, a.predict(xTrain))
+print(accuracy)"""
 
 

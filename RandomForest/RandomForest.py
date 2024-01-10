@@ -10,21 +10,21 @@ from loadData import *
 
 
 class RandomForest:
-    def __init__(self, n_estimators, features, m, n, k):
+    def __init__(self, n_estimators, features, m, n, k, maxDepth):
         self.n_estimators = n_estimators
         self.features = features
         self.m = m
         self.n = n
         self.k = k
         self.trees = []
-
+        self.maxDepth = maxDepth
     def fit(self, x, y):
         for _ in range(self.n_estimators):
             # Bootstrap sampling - random sampling with replacement
             x_sample, y_sample = resample(x, y, replace=True, random_state=np.random.randint(1000))
             
             # Create and train a decision tree using ID3
-            tree = ID3(self.features,self.m , self.n, self.k)
+            tree = ID3(self.features,self.m , self.n, self.k, self.maxDepth)
             tree.fit(x_sample, y_sample)
             
             # Add the trained tree to the forest
@@ -37,7 +37,7 @@ class RandomForest:
         return ensemble_predictions
 
 # Example usage:
-vocabulary = createVocabulary(100, 10, 1000)
+"""vocabulary = createVocabulary(100, 10, 1000)
 xTrain, yTrain = loadTrainData()
 
 RF = RandomForest(5, vocabulary, 100, 10, 1000)
@@ -47,4 +47,4 @@ RF.predict(xTrain)
 from sklearn.metrics import accuracy_score
 
 accuracy = accuracy_score(yTrain, RF.predict(xTrain))
-print(accuracy)
+print(accuracy)"""

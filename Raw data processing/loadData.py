@@ -43,3 +43,11 @@ def loadTrainData() -> list:
             expected.append(1)
 
         return [data, expected]    
+
+import random 
+
+def shuffleData(data, result):
+        ls = list(zip(data,result))
+        random.shuffle(ls)
+        data, result = zip(*ls)
+        return [data, result]

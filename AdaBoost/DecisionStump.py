@@ -1,4 +1,5 @@
 import os
+import random
 import numpy as np
 # importing custom functions.
 #--------
@@ -24,32 +25,81 @@ class DecisionStump:
             # features are binary values
             
             predictions = list()
-            # iterate over every list that xTrain contains. (xTrain is a 2d list) 
-            for line in xTrain:
-                   
-                if line[feature_index] == 1:
-                    predictions.append(1)
+            exists_pos = 0
+            exists_neg = 0
+            NoExist_pos = 0
+            NoExist_neg = 0
+            # iterate over every list that xTrain contains. (xTrain is a 2d list)
+            for k in range(len(xTrain)):
+                if xTrain[k][feature_index] == 1:
+                    if yTrain[k] == 1:
+                        exists_pos +=1
+                    else:
+                        exists_neg +=1 
                 else:
-                    predictions.append(0)
+                    if yTrain[k] == 1:
+                        NoExist_pos +=1 
+                    else:
+                        NoExist_neg +=1 
 
+            for line in xTrain:
+                if line[feature_index] == 1:
+                    if exists_pos > exists_neg:
+                        predictions.append(1)
+                        
+                    else:
+                        predictions.append(0)
+                         
+                else:
+                    if NoExist_pos > NoExist_neg:
+                        predictions.append(1)
+                        
+                    else:
+                        predictions.append(0)
+                        
+            
             error = 0
+            c = 0
             for i in range(len(predictions)):
                 if predictions[i] != yTrain[i]:
+                    c += 1
+                                            
                     error += sampleWeights[i] 
-
+            
+            #print(c)
             # save the values of the stump with minimum error so far.
+            c1 = 0
             if error < minError:
+                c +=1 
                 minError = error
-                self.feature_index = feature_index
                 
+                self.feature_index = feature_index
+                self.existsCategory = exists_pos > exists_neg
+                self.noExistsCategory = NoExist_pos > NoExist_neg
+                
+                    #print(mistakes[:10])
+                #print(self.feature_index, error)
 
 
     def predict(self, xTest):
-        results = []
-        for line in xTest:
-            results.append(xTest[self.feature_index] == 1)
+        predictions = []
 
-        return results
+        if isinstance(xTest[0], list):
+            for line in xTest:
+                
+                if line[self.feature_index] == 1:
+                    
+                    predictions.append(self.existsCategory)
+                            
+                else:
+                    predictions.append(self.noExistsCategory)
+        else:
+            return (self.existsCategory if xTest[self.feature_index] == 1 else self.noExistsCategory)             
+                
+                    
+                        
+        
+        return predictions
 
 
 """x, y = loadTrainData()

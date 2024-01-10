@@ -18,13 +18,14 @@ class Node:
 
 
 class ID3:
-    def __init__(self, features, m, n, k):
+    def __init__(self, features, m, n, k, maxDepth):
         self.tree = None
         self.features = features
         self.m = m
         self.n = n
         self.k = k
-    
+        self.maxDepth = maxDepth
+        self.currDepth = 0
     def fit(self, x, y):
         '''
         creates the tree
@@ -33,10 +34,12 @@ class ID3:
         x = createVector(x, self.features)
         y = np.array(y)
         most_common = mode(y.flatten())
+        self.currDepth = 0
         self.tree = self.create_tree(x, y, features=np.arange(len(self.features)), category=most_common)
         return self.tree
     
     def create_tree(self, x_train, y_train, features, category):
+        self.currDepth +=1
         
         x_train = np.array(x_train)
         y_train = np.array(y_train)
@@ -51,7 +54,8 @@ class ID3:
         elif np.all(y_train.flatten() == 1):
             return Node(checking_feature=None, is_leaf=True, category=1)
         
-        if len(features) == 0:
+        if len(features) == 0 or self.maxDepth == self.currDepth :
+            print(self.currDepth)
             return Node(checking_feature=None, is_leaf=True, category=mode(y_train.flatten()))
         
         igs = list()
@@ -131,7 +135,7 @@ class ID3:
 
 
 
-vocabulary = createVocabulary(100, 10, 1000)
+"""vocabulary = createVocabulary(100, 10, 1000)
 xTrain, yTrain = loadTrainData()
 
 id3 = ID3(vocabulary, 100, 10, 1000)
@@ -142,4 +146,4 @@ from sklearn.metrics import accuracy_score
 
 
 accuracy = accuracy_score(yTrain, id3.predict(xTrain))
-print(accuracy)
+print(accuracy)"""
