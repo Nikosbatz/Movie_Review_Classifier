@@ -12,8 +12,9 @@ from createVocabulary import *
 class DecisionStump:
 
     
-    def __init__(self):
+    def __init__(self, existing_features):
         self.feature_index = 0
+        self.existing_features = existing_features
 
               
     def fit(self, xTrain, yTrain, sampleWeights):
@@ -59,18 +60,17 @@ class DecisionStump:
                         
             
             error = 0
-            c = 0
+            
             for i in range(len(predictions)):
                 if predictions[i] != yTrain[i]:
-                    c += 1
-                                            
+                      
                     error += sampleWeights[i] 
             
             #print(c)
             # save the values of the stump with minimum error so far.
-            c1 = 0
-            if error < minError:
-                c +=1 
+            
+            if error < minError and feature_index not in self.existing_features:
+                 
                 minError = error
                 
                 self.feature_index = feature_index

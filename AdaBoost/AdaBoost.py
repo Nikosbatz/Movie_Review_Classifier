@@ -1,6 +1,6 @@
 from DecisionStump import *
 
-from math import log2
+from math import *
 # importing custom functions.
 #--------
 import sys
@@ -20,6 +20,7 @@ class AdaBoost:
         self.stumpWeights = []
         self.stumps = []
         self.vocab = None
+        self.existing_features = []
         
 
     def fit(self, xTrain, yTrain):
@@ -37,10 +38,11 @@ class AdaBoost:
             count += 1
             print(count, "------")
 
-            stump = DecisionStump()
+            stump = DecisionStump(self.existing_features)
             
             stump.fit(xVector, yTrain, weights)
             print(stump.feature_index)
+            self.existing_features.append(stump.feature_index)
             
             self.stumps.append(stump)
             #print(self.vocab[stump.feature_index])
@@ -77,7 +79,7 @@ class AdaBoost:
             
             
              
-            self.stumpWeights.append( 1/2 * log2((1-error) / error ))
+            self.stumpWeights.append( 1/2 * log((1-error) / error ))
 
             
             
@@ -90,8 +92,8 @@ class AdaBoost:
         
         # Intialize final predictions list
         y = list()
-        ls = []
-
+        
+        keys = list(self.vocab.keys())
         count = 0
         # Iterates over each item of the input given
         for review in xVector:
@@ -101,7 +103,7 @@ class AdaBoost:
 
             # Calculates the predictions of each stump
             for i in range(self.estimators):
-
+                print(keys[self.stumps[i].feature_index])
                 prediction = self.stumps[i].predict(review)
                 # Calculates the review's sum based on stump weights
                 if prediction == 1:
@@ -109,15 +111,16 @@ class AdaBoost:
                 else:
                     sum_neg += self.stumpWeights[i]
 
-            
-            y.append(1 if sum_pos>sum_neg else 0)
+            print("----------")
+            y.append(sum_pos>sum_neg )
         
+        print(y[:100])
         return y
     
 
 xTrain, yTrain = loadTrainData()
-
-a = AdaBoost(50, 1000, 200, 1000)
+xTrain, yTrain = shuffleData(xTrain, yTrain)
+a = AdaBoost(35, 500, 100, 1000)
 
 a.fit(xTrain, yTrain)
 print(a.stumpWeights)
@@ -126,9 +129,9 @@ from sklearn.metrics import accuracy_score
 from sklearn.metrics import classification_report
 
 
-r = classification_report(yTrain, a.predict(xTrain))
-print(r)
-"""accuracy = accuracy_score(yTrain, a.predict(xTrain))
-print(accuracy)"""
+#r = classification_report(yTrain[12500:], a.predict(xTrain[12500:]))
+#print(r)
 
 
+accuracy = accuracy_score(yTrain, a.predict(xTrain))
+print(accuracy)
