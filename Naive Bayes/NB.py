@@ -1,6 +1,10 @@
-
-import os
 import random
+import sys
+import os
+sys.path.append(os.getcwd() + "\\Raw data processing")
+from loadData import *
+from createVocabulary import *
+
 
 
 class NB:
@@ -60,44 +64,14 @@ class NB:
         self.positiveWordsProbs = dict(sorted(self.positiveWordsProbs.items(), key= lambda item: item[1], reverse=True))
              
 
-        #fPos = open(os.getcwd() + "\\Raw data processing\\PositiveFreq.txt", "r")
-        #fNeg = open(os.getcwd() + "\\Raw data processing\\NegativeFreq.txt", "r")
         
-        
-
-        #self.countPos = int(fPos.readline().split()[1])
-        #self.countNeg = int(fNeg.readline().split()[1])
-        
-        #self.probNeg = self.countNeg / (self.countNeg + self.countPos)
-        #self.probPos = self.countPos / (self.countNeg + self.countPos)
-        
-        # Calculating P(Xi|C) using Laplace smoothing
-        """line = fPos.readline()
-        while line != "":
-            self.positiveWordsProbs[line.split()[0]] = int(line.split()[1]) +1 / self.countPos +2
-            line = fPos.readline()
-    
-        line = fNeg.readline()
-        while line != "":
-            self.negativeWordsProbs[line.split()[0]] = int(line.split()[1]) +1/ self.countNeg +2
-            line = fNeg.readline()
-
-        fPos.close()
-        fNeg.close()"""
         
 
     def predict(self, xTest, m=6000, n=300, k=9000) -> list:
 
         # creates custom dictionary based on the hyper-parameters (m, n, k) given.
-        customDict = {}
-        OverallFile = open(os.getcwd() + "\\Raw data processing\\OverallFreq.txt", "r")
-        lines =  OverallFile.readlines()
-        lines = (lines[n:-k])[:m]
-        for i in lines:
-            customDict [i.split()[0]] = 0
-            
-        OverallFile.close()
-
+        customDict = createVocabulary(m, n, k)
+        
         
 
         
@@ -115,7 +89,7 @@ class NB:
             # Specifying which words the review contains (0 or 1 in the vector attributes)
             for item in review.keys():
                 review[item] =  1 if customDict.get(item) == 0 else 0
-
+            
             
             
             # NEGATIVE
@@ -146,51 +120,9 @@ class NB:
             
         return predictedValues
             
-
-
-    def loadTestData(self) -> list:
-        data = []
-        expected = []
-        path = os.getcwd() + "\\Raw data processing\\aclImdb\\test\\neg\\"
-        for file in os.listdir(path):
-            f = open(path + file, "r", errors="ignore")
-            data.append(f.read())
-            expected.append(0)
-        
-        path = os.getcwd() + "\\Raw data processing\\aclImdb\\test\\pos\\"
-        for file in os.listdir(path):
-            f = open(path + file, "r", errors="ignore")
-            data.append(f.read())
-            expected.append(1)
-
-        return [data, expected]
-    
-
-    def loadTrainData(self) -> list:
-        data = []
-        expected = []
-        path = os.getcwd() + "\\Raw data processing\\aclImdb\\train\\neg\\"
-        for file in os.listdir(path):
-            f = open(path + file, "r", errors="ignore")
-            data.append(f.read())
-            expected.append(0)
-        
-        path = os.getcwd() + "\\Raw data processing\\aclImdb\\train\\pos\\"
-        for file in os.listdir(path):
-            f = open(path + file, "r", errors="ignore")
-            data.append(f.read())
-            expected.append(1)
-
-        return [data, expected]
         
         
     def get_params(self, deep=True):
         return {"negativeWordsProbs":self.negativeWordsProbs, "positiveWordsProbs":self.positiveWordsProbs, "probNeg":self.probNeg, 
                 "probPos":self.probPos, "countPos":self.countPos, "countNeg":self.countNeg}
     
-
-    def shuffleData(self, data, result):
-        ls = list(zip(data,result))
-        random.shuffle(ls)
-        data, result = zip(*ls)
-        return [data, result]

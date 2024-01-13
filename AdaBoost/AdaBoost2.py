@@ -1,9 +1,8 @@
 from DecisionStump import *
-
+from sklearn.tree import DecisionTreeClassifier
 from math import *
 # importing custom functions.
 #--------
-import os
 import sys
 sys.path.append(os.getcwd() + "\\Raw data processing")
 from loadData import *
@@ -49,19 +48,13 @@ class AdaBoost:
             count += 1
             print(count, "------")
 
-            stump = DecisionStump(self.existing_features)
-            
-            stump.fit(xVector, yTrain, weights)
-            
-            self.existing_features.append(stump.feature_index)
-            
+            stump = DecisionTreeClassifier(max_depth=1)
+            stump.fit(xVector, yTrain, sample_weight=weights)
             self.stumps.append(stump)
-            #print(self.vocab[stump.feature_index])
+            
             
             predictions = stump.predict(xVector)
-            
             predictions = np.array(predictions)
-            
             
             error = 0
             for k in range (xTrainLen):
@@ -69,63 +62,55 @@ class AdaBoost:
                     error += weights[k]
                 
             
-            # Calculate current stump's weight.
             self.stumpWeights.append( 1/2 * log((1-error) / error ))
             
-            # if error greater than 0.5 break the loop
+            print("Weighted error: ",error)
             if error >= 0.5 :
                 
                 print("ERROR >= 0.5")
                 print(error)
                 break
-            
-               
-            # if predictions[k] == yTrain[k] -> e^-self.stumWeights[i] < 1 so weights[k] decreases
-            # if predictions[k] != yTrain[k] -> e^-self.stumWeights[i] > 1 so weights[k] increases
-            # In Conclusion if a prediction is correct its weight decreases if it is mistaken then it increases.
-            weights *= np.exp(-self.stumpWeights[i] * yTrain * predictions)
-            
+            # Decreasing weights of correct predictions
+            for k in range(xTrainLen):
+                if predictions[k] == yTrain[k]:
+                    weights[k] *= error/(1-error)
+
+            # Normalizing
             s = sum(weights)
             for k in range(len(weights)):                
                 weights[k] = weights[k] / s
 
             
             
-            
-
+    
     def predict(self, xTest):
         
         xTest = createVector(xTest, self.vocab)
         xTest = np.array(xTest)
-        predictions = np.zeros(xTest.shape[0])
-        for alpha, stump in zip(self.stumpWeights, self.stumps):
-            predictions += alpha * np.array(stump.predict(xTest))
+        predictions = np.zeros(len(xTest))
+        for k in range(len(self.stumps)):
+            pred = self.stumps[k].predict(xTest)
+            for i in range(len(pred)):
+                
+                predictions[i] += -1*self.stumpWeights[k] if pred[i]==-1 else 1*self.stumpWeights[k]
 
-        # Convert back to binary predictions (0 or 1)
-        return (predictions > 0).astype(int)
+        for i in range(len(predictions)):
+            predictions[i] = 0 if predictions[i] <= 0 else 1
+
+
+        print(predictions)
+        return predictions
         
-    
+        
 
+        
 """xTrain, yTrain = loadTrainData()
-xTrain, yTrain = shuffleData(xTrain, yTrain)
-a = AdaBoost(80, 500, 10, 1000)
 
-a.fit(xTrain[:15000], yTrain[:15000])
+ab = AdaBoost(50, 500, 50, 1000)
+ab.fit(xTrain, yTrain)
 
 
 from sklearn.metrics import accuracy_score
-from sklearn.metrics import classification_report
 
-
-#r = classification_report(yTrain[12500:], a.predict(xTrain[12500:]))
-#print(r)
-
-xTest, yTest = loadTestData()
-
-
-accuracy = accuracy_score(yTrain, a.predict(xTrain))
-print(accuracy)
-
-accuracy = accuracy_score(yTest, a.predict(xTest))
-print(accuracy)
-"""
+accuracy = accuracy_score(yTrain, ab.predict(xTrain))
+print(accuracy)"""

@@ -2,6 +2,11 @@ from sklearn.metrics import accuracy_score
 import numpy as np
 import matplotlib.pyplot as plt
 from NB import NB
+import sys
+import os
+sys.path.append(os.getcwd() + "\\Raw data processing")
+from loadData import *
+from createVocabulary import *
 
 
 def custom_learning_curve(x_train, y_train,
@@ -33,6 +38,7 @@ def custom_learning_curve(x_train, y_train,
 
   for i in range(1, len(x_splits)):
     #knn = KNeighborsClassifier(n_neighbors=best_k)
+    nb = NB()
     curr_x = np.concatenate((curr_x, x_splits[i]), axis=0)
     #print(curr_x.shape)
     curr_y = np.concatenate((curr_y, y_splits[i]), axis=0)
@@ -62,11 +68,11 @@ def custom_learning_curve(x_train, y_train,
 
 
 nb = NB()
-xTrain, yTrain = nb.loadTrainData()
-xTest, yTest = nb.loadTestData()
+xTrain, yTrain = loadTrainData()
+xTest, yTest = loadTestData()
 print("----")
-xTest, yTest = nb.shuffleData(xTest, yTest)
-xTrain, yTrain = nb.shuffleData(xTrain, yTrain)
+xTest, yTest = shuffleData(xTest, yTest)
+xTrain, yTrain = shuffleData(xTrain, yTrain)
 
 
 custom_learning_curve(xTrain, yTrain, xTest, yTest, 5)

@@ -1,4 +1,5 @@
 import os
+from statistics import mode
 import random
 import numpy as np
 # importing custom functions.
@@ -18,83 +19,46 @@ class DecisionStump:
 
               
     def fit(self, xTrain, yTrain, sampleWeights):
+
+        sampleWeights = np.array(sampleWeights)
         columns = len(xTrain[0])
         minError = 1
+
         # iterate over every feature of the xTrain list
         for feature_index in range(columns):
+            
+            
+            
+            # i == 1 -> if feature_index == 1 (word exists) then classify the review as -1 (bad) else the review is 1 (good)
+            # i == 0 -> if feature_index == 0 (word doesnt exist) then classify the review as -1 (bad) else the review is 1 (good)
+            for i in range (2):
+                
+                    predictions = np.ones(len(xTrain))
+                    predictions[ xTrain[:, feature_index] == i] = -1
+                    error = np.sum(sampleWeights * (predictions != yTrain))
                     
-            # features are binary values
-            
-            predictions = list()
-            exists_pos = 0
-            exists_neg = 0
-            NoExist_pos = 0
-            NoExist_neg = 0
-            # iterate over every list that xTrain contains. (xTrain is a 2d list)
-            for k in range(len(xTrain)):
-                if xTrain[k][feature_index] == 1:
-                    if yTrain[k] == 1:
-                        exists_pos +=1
-                    else:
-                        exists_neg +=1 
-                else:
-                    if yTrain[k] == 1:
-                        NoExist_pos +=1 
-                    else:
-                        NoExist_neg +=1 
-
-            for line in xTrain:
-                if line[feature_index] == 1:
-                    if exists_pos > exists_neg:
-                        predictions.append(1)
+                    # save the values of the stump with minimum error so far.
+                    if error < minError and feature_index not in self.existing_features:
                         
-                    else:
-                        predictions.append(0)
-                         
-                else:
-                    if NoExist_pos > NoExist_neg:
-                        predictions.append(1)
+                        minError = error
+                        self.feature_index = feature_index
+                        self.i = i
                         
-                    else:
-                        predictions.append(0)
-                        
-            
-            error = 0
-            
-            for i in range(len(predictions)):
-                if predictions[i] != yTrain[i]:
-                      
-                    error += sampleWeights[i] 
-            
-            #print(c)
-            # save the values of the stump with minimum error so far.
-            
-            if error < minError and feature_index not in self.existing_features:
-                 
-                minError = error
-                
-                self.feature_index = feature_index
-                self.existsCategory = exists_pos > exists_neg
-                self.noExistsCategory = NoExist_pos > NoExist_neg
-                
-                    #print(mistakes[:10])
-                #print(self.feature_index, error)
-
+                    
+        print(minError)
 
     def predict(self, xTest):
         predictions = []
-
-        if isinstance(xTest[0], list):
-            for line in xTest:
-                
-                if line[self.feature_index] == 1:
-                    
-                    predictions.append(self.existsCategory)
-                            
-                else:
-                    predictions.append(self.noExistsCategory)
+        xTest = np.array(xTest)
+        # if xTest is 2D array-like matrix
+        if not isinstance(xTest[0], int):
+            
+            predictions = np.ones(len(xTest))
+            predictions[xTest[:, self.feature_index] == self.i] = -1
+        # if xTest is 1D array-like matrix
         else:
-            return (self.existsCategory if xTest[self.feature_index] == 1 else self.noExistsCategory)             
+            prediction = 1
+            return -1 if prediction[self.feature_index] == self.i else 1             
                 
                     
                         
