@@ -1,4 +1,4 @@
-from sklearn.ensemble import AdaBoostClassifier
+from sklearn.naive_bayes import GaussianNB
 import sys
 import os
 sys.path.append(os.getcwd() + "\\Raw data processing")
@@ -8,13 +8,13 @@ from sklearn.metrics import classification_report
 
 X_train, y_train = loadTrainData()
 X_test, y_test = loadTestData()
-vocab = createVocabulary(700, 50, 15000)
+vocab = createVocabulary( m=6000, n=300, k=9000)
 X_train = createVector(X_train, vocab)
 
 X_test = createVector(X_test, vocab)
 
-ab = AdaBoostClassifier(n_estimators=50)
-ab.fit(X_train, y_train)
+nb = GaussianNB()
+nb.fit(X_train, y_train)
 
-print(classification_report(y_test, ab.predict(X_test),
+print(classification_report(y_test, nb.predict(X_test),
                             zero_division=1))

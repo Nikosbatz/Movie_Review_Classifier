@@ -1,14 +1,13 @@
 import matplotlib.pyplot as plt
+from sklearn.metrics import make_scorer
 from sklearn.model_selection import learning_curve
 import numpy as np
-from sklearn.naive_bayes import GaussianNB
 import sys
 import os
 sys.path.append(os.getcwd() + "\\Raw data processing")
 from loadData import *
 from createVocabulary import *
-
-
+from sklearn.ensemble import AdaBoostClassifier
 
 def plot_learning_curve(estimator, title,
                         X_for_val, y_for_val,
@@ -24,14 +23,13 @@ def plot_learning_curve(estimator, title,
         plt.ylim(*ylim)
     plt.xlabel("Training examples")
     plt.ylabel("Accuracy")
-    # print(train_sizes)
+    
     train_sizes, train_scores, val_scores = learning_curve(
         estimator,
         X_for_val, y_for_val,
         cv=val_cv, n_jobs=-1, scoring='accuracy',
         train_sizes=train_sizes)
 
-    # print(train_sizes)
 
     train_scores_mean = np.mean(train_scores, axis=1)
     train_scores_std = np.std(train_scores, axis=1)
@@ -50,24 +48,7 @@ def plot_learning_curve(estimator, title,
              label="Validation score")
 
 
-    # _, _, test_scores = learning_curve(estimator,
-    #                                    X_for_test, y_for_test,
-    #                                    cv=test_cv, n_jobs=-1,
-    #                                    scoring='accuracy',
-    #                                    train_sizes=train_sizes)
-
-
-    # test_scores_mean = np.mean(test_scores, axis=1)
-    # test_scores_std = np.std(test_scores, axis=1)
-    # plt.grid()
-
-
-    # plt.fill_between(train_sizes, test_scores_mean - test_scores_std,
-    #                  test_scores_mean + test_scores_std, alpha=0.1,
-    #                  color="red")
-
-    # plt.plot(train_sizes, test_scores_mean, 'o-', color="red",
-    #          label="Test score")
+    
 
     plt.legend(loc="lower right")
     plt.show()
@@ -75,24 +56,15 @@ def plot_learning_curve(estimator, title,
 
 
 
-
-
-
-
 xTrain, yTrain = loadTrainData()
 xTrain, yTrain = shuffleData(xTrain, yTrain)
-vocab = createVocabulary(m=6000, n=300, k=9000)
+vocab = createVocabulary(700, 50, 15000)
 xTrain = createVector(xTrain, vocab)
+ada = AdaBoostClassifier(n_estimators=50)
 
-nb = GaussianNB()
 
-plot_learning_curve(estimator=nb, title='Learning Curve',
+plot_learning_curve(estimator=ada, title='Learning Curve',
                     X_for_val=xTrain, 
                     y_for_val=yTrain,
                     val_cv=None)
-
-
-
-
-
 

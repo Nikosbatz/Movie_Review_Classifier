@@ -11,27 +11,30 @@ from createVocabulary import *
 #----------------------------
 
 #nb = NB()
-AdaBoost = AdaBoost(80, 700, 30, 15000)
+Ada = AdaBoost(50, 700, 50, 15000)
 
 
 xTrain, yTrain = loadTrainData()
 xTest, yTest = loadTestData()
 xTrain, yTrain = shuffleData(xTrain, yTrain)
+predictions = []
 classifications = []
 split_size = int(len(xTrain) / 5)
 x_splits = np.split(np.array(xTrain), 5) # must be equal division
 y_splits = np.split(np.array(yTrain), 5)
 curr_x = x_splits[0]
 curr_y = y_splits[0]
-AdaBoost.fit(curr_x, curr_y)
-classifications.append(classification_report(yTest, AdaBoost.predict(xTest), output_dict=True))
+Ada.fit(curr_x, curr_y)
+predictions.append(Ada.predict(xTest))
+classifications.append(classification_report(yTest, predictions[0], output_dict=True))
 
 for i in range(1,5):
-
+    Ada = AdaBoost(50, 700, 50, 15000)
     curr_x = np.concatenate((curr_x, x_splits[i]), axis=0)
     curr_y = np.concatenate((curr_y, y_splits[i]), axis=0)
-    AdaBoost.fit(curr_x, curr_y)
-    classifications.append(classification_report(yTest, AdaBoost.predict(xTest), output_dict=True ))
+    Ada.fit(curr_x, curr_y)
+    predictions.append(Ada.predict(xTest))
+    classifications.append(classification_report(yTest, predictions[i], output_dict=True ))
 
 precisions = []
 f1 = []
@@ -61,3 +64,6 @@ plt.legend(loc="lower right")
 plt.xlabel('Amount of data')
 plt.ylabel('Score')
 plt.show()
+
+
+print(classification_report(yTest, predictions[4]))

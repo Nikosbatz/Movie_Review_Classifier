@@ -31,7 +31,7 @@ def custom_learning_curve(x_train, y_train,
   #print(curr_x.shape)
   curr_y = y_splits[0]
   #print(curr_y.shape)
-  a = AdaBoost(50, 700, 50, 15000)
+  a = AdaBoost(50, 700, 30, 15000)
   a.fit(curr_x, curr_y)
   train_accuracies.append(accuracy_score(curr_y,
                                          a.predict(curr_x)))
@@ -41,7 +41,7 @@ def custom_learning_curve(x_train, y_train,
 
   for i in range(1, len(x_splits)):
     #knn = KNeighborsClassifier(n_neighbors=best_k)
-    a = AdaBoost(80, 700, 30, 15000)
+    a = AdaBoost(50, 700, 30, 15000)
     curr_x = np.concatenate((curr_x, x_splits[i]), axis=0)
     print(curr_x.shape)
     curr_y = np.concatenate((curr_y, y_splits[i]), axis=0)
@@ -78,5 +78,5 @@ xTest, yTest = shuffleData(xTest, yTest)
 xTrain, yTrain = shuffleData(xTrain, yTrain)
 
 
-custom_learning_curve(xTrain, yTrain, xTest, yTest, 5)
+custom_learning_curve(xTrain, yTrain, xTest, yTest, 20)
 
