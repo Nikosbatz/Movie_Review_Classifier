@@ -1,5 +1,6 @@
 from RandomForest import RandomForest
 from sklearn.metrics import accuracy_score
+from sklearn.model_selection import train_test_split
 import numpy as np
 import sys
 import os
@@ -26,8 +27,8 @@ def custom_learning_curve(x_train, y_train,
     curr_x = x_splits[0]
     curr_y = y_splits[0]
 
-    vocabulary = createVocabulary(100, 50, 100)
-    RF = RandomForest(5, vocabulary, 100, 50, 100, 20)
+    vocabulary = createVocabulary(500, 50, 750)
+    RF = RandomForest(10, vocabulary, 500, 50, 750, 20)
 
     # Initial fit
     start_time = time.time()
@@ -39,8 +40,8 @@ def custom_learning_curve(x_train, y_train,
     test_accuracies.append(accuracy_score(y_test, RF.predict(x_test)))
 
     for i in range(1, len(x_splits)):
-        curr_x = np.concatenate((curr_x, x_splits[i][:1000]), axis=0)  # Adjust the sample size as needed
-        curr_y = np.concatenate((curr_y, y_splits[i][:1000]), axis=0)  # Adjust the sample size as needed
+        curr_x = np.concatenate((curr_x, x_splits[i][:500]), axis=0)  # Adjust the sample size as needed
+        curr_y = np.concatenate((curr_y, y_splits[i][:500]), axis=0)  # Adjust the sample size as needed
 
         # Fit for the current iteration
         start_time = time.time()
@@ -63,15 +64,12 @@ def custom_learning_curve(x_train, y_train,
     plt.ylabel('Accuracy')
     plt.show()
 
-# Rest of your code remains unchanged
+# Load and shuffle data
+xData, yData = loadTrainData()
+xData, yData = shuffleData(xData, yData)
 
-xTrain, yTrain = loadTrainData()
-xTrain, yTrain = shuffleData(xTrain, yTrain)
-xTest, yTest = loadTestData()
-xTest, yTest = shuffleData(xTest, yTest)
+# Split data into 70-30 train-test sets
+xTrain, xTest, yTrain, yTest = train_test_split(xData, yData, test_size=0.2, random_state=42)
 
+# Call the custom_learning_curve function
 custom_learning_curve(xTrain, yTrain, xTest, yTest, 5)
-
-
-
-
