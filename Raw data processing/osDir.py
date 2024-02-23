@@ -1,3 +1,7 @@
+# This file contains the function to make the frequencies .txt files from the raw data of aclImdb file.
+
+
+
 import os
 
 def splitData():

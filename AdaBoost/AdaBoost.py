@@ -10,6 +10,7 @@ from loadData import *
 from createVocabulary import *
 #--------
 
+# ----- Custom DecisionStump implementation ------
 
 class AdaBoost:
 
@@ -29,6 +30,7 @@ class AdaBoost:
         self.vocab = createVocabulary(self.m, self.n, self.k)
         xVector = createVector(xTrain, self.vocab)
         yTrain = list(yTrain)
+        # Convert predictions from 0 or 1 to -1 or 1
         for y in range(len(yTrain)):
             yTrain[y] = yTrain[y] * 2 -1
         

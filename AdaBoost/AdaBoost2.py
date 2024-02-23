@@ -9,6 +9,7 @@ from loadData import *
 from createVocabulary import *
 #--------
 
+# ----- Scikit Learn DecisionTreeClassifier is used in this implementation -----
 
 class AdaBoost:
 

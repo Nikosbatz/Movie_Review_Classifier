@@ -36,15 +36,3 @@ def createVector(x, vocab):
 
     return xVector
 
-
-
-def create2dList(x):
-
-    result = []
-    
-    for review in x:
-        
-        result.append(review.split())
-        
-         
-    return result
